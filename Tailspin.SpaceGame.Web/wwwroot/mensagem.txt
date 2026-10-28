@@ -1,3 +1,4 @@
 # Recado ao vivo do Space Game.
 # Escreva o recado na primeira linha sem # (até 160 caracteres).
 # Se não houver nenhuma linha sem #, a faixa amarela não aparece no site.
+Olá, Prof. Lucimar e turma! Esta frase foi publicada ao vivo pelo Azure DevOps.
