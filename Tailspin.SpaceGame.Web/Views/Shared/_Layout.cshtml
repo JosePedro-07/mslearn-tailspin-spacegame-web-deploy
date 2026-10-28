@@ -1,9 +1,14 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>@ViewData["Title"] - TailSpin SpaceGame</title>
+        <meta name="description" content="Space Game: jogo de exemplo publicado automaticamente com Azure DevOps." />
+        <title>@ViewData["Title"] - Space Game</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Chakra+Petch:wght@500;600;700&display=swap" />
 
         <environment include="Development">
             <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -19,11 +24,9 @@
     <body>
         <partial name="_CookieConsentPartial" />
 
-        <div class="container-fluid body-content">
-            <div class="row">
-                @RenderBody()
-            </div>
-        </div>
+        <main>
+            @RenderBody()
+        </main>
 
         <environment include="Development">
             <script src="~/lib/jquery/dist/jquery.js"></script>

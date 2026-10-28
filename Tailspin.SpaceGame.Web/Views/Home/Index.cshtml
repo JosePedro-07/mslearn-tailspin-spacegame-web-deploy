@@ -1,270 +1,246 @@
 ﻿@model TailSpin.SpaceGame.Web.Models.LeaderboardViewModel
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnv
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Início";
+    var deploy = TailSpin.SpaceGame.Web.Models.DeploymentInfo.Load(HostEnv.WebRootPath);
+
+    // Etapas do pipeline, na ordem em que acontecem.
+    var etapas = new[]
+    {
+        new { Chave = "commit",   Titulo = "Commit no GitHub",   Texto = "Uma alteração no código dispara o pipeline sozinho." },
+        new { Chave = "build",    Titulo = "Compilação",         Texto = "O Azure Pipelines compila o jogo e gera o pacote drop." },
+        new { Chave = "dev",      Titulo = "Desenvolvimento",    Texto = "O pacote é publicado automaticamente neste ambiente." },
+        new { Chave = "aprovacao",Titulo = "Aprovação",          Texto = "Uma pessoa revisa e libera a próxima etapa." },
+        new { Chave = "staging",  Titulo = "Homologação",        Texto = "O mesmo pacote é publicado para a validação final." },
+    };
 }
-<section class="intro">
-    <div class="container">
-        <img class="title" src="/images/space-game-title.svg" alt="Space Game">
-        <p>An example site for learning</p>
-    </div>
-</section>
-<section class="download">
-    <div class="image-cap"></div>
-    <div class="container">
-        <a href="" class="btn btn-default btn-lg" data-toggle="modal" data-target="#pretend-modal">Download game</a>
-    </div>
-</section>
 
-<!-- Screenshots -->
-<section class="screens">
-    <div class="container">
-        <ul>
-            <li><a href="" data-toggle="modal" data-target=".pic-01"><img src="/images/space-game-placeholder.svg" alt=""></a></li>
-            <li><a href="" data-toggle="modal" data-target=".pic-01"><img src="/images/space-game-placeholder.svg" alt=""></a></li>
-            <li><a href="" data-toggle="modal" data-target=".pic-01"><img src="/images/space-game-placeholder.svg" alt=""></a></li>
-            <li><a href="" data-toggle="modal" data-target=".pic-01"><img src="/images/space-game-placeholder.svg" alt=""></a></li>
-        </ul>
+<header class="hero">
+    <div class="hero-inner">
+        <div class="hero-text">
+            <h1 class="hero-title">Space Game</h1>
+            <p class="hero-lead">Pilote entre galáxias, desvie de asteroides e dispute o topo do ranking.</p>
+            <p class="hero-sub">Este site é publicado automaticamente pelo Azure DevOps a cada alteração no código.</p>
+            <div class="hero-actions">
+                <a class="btn-primary" href="#ranking">Ver o ranking</a>
+                <a class="btn-ghost" href="#pipeline">Como este site chegou aqui</a>
+            </div>
+        </div>
+        <img class="hero-art" src="/images/hero-space.svg" alt="Foguete passando por um planeta com anéis" width="1200" height="720">
     </div>
-</section>
+</header>
 
-<!-- Leaderboard -->
-<section class="leaderboard">
-    <div class="container">
-        <a name="leaderboard"></a>
-        <h2>Space leaders</h2>
-        <!-- Start Leaderboard table -->
-        <div class="row">
-            <div class="col-sm-9 leader-scores">
-                <div class="row high-score hidden-xs">
-                    <div class="col-sm-1">
-                        Rank
-                    </div>
-                    <div class="col-sm-4">
-                        Player
-                    </div>
-                    <div class="col-sm-2">
-                        Mode
-                    </div>
-                    <div class="col-sm-3">
-                        Galaxy
-                    </div>
-                    <div class="col-sm-2">
-                        Score
-                    </div>
+<section class="console env-@deploy.EnvironmentKey" aria-label="Informações da publicação">
+    <div class="console-inner">
+        <div class="console-env">
+            <span class="signal" aria-hidden="true"></span>
+            <div>
+                <p class="console-caption">Você está vendo o ambiente de</p>
+                <p class="console-env-name">@deploy.EnvironmentName</p>
+            </div>
+        </div>
+        <dl class="console-data">
+            <div>
+                <dt>Compilação</dt>
+                <dd>@(deploy.HasBuild ? "#" + deploy.BuildNumber : "sem pipeline")</dd>
+            </div>
+            <div>
+                <dt>Site no Azure</dt>
+                <dd>@(string.IsNullOrEmpty(deploy.SiteName) ? "rodando localmente" : deploy.SiteName)</dd>
+            </div>
+            @if (!string.IsNullOrEmpty(deploy.Region))
+            {
+                <div>
+                    <dt>Região</dt>
+                    <dd>@deploy.Region</dd>
                 </div>
+            }
+            <div>
+                <dt>Runtime</dt>
+                <dd>@deploy.Runtime</dd>
+            </div>
+        </dl>
+    </div>
+</section>
+
+<section class="pipeline" id="pipeline">
+    <div class="wrap">
+        <h2>Do código ao ar, sem cliques manuais</h2>
+        <p class="section-lead">Cada versão deste site passa pelas mesmas etapas do Azure Pipelines. A etapa destacada é a que gerou a página que você está vendo.</p>
+        <ol class="steps">
+            @foreach (var etapa in etapas)
+            {
+                var atual = etapa.Chave == deploy.EnvironmentKey;
+                <li class="step@(atual ? " is-current" : "")">
+                    <h3>@etapa.Titulo</h3>
+                    <p>@etapa.Texto</p>
+                    @if (atual)
+                    {
+                        <span class="here">Você está aqui</span>
+                    }
+                </li>
+            }
+        </ol>
+    </div>
+</section>
+
+<section class="galaxies">
+    <div class="wrap">
+        <h2>Três galáxias para explorar</h2>
+        <div class="gallery">
+            <figure>
+                <img src="/images/scene-asteroides.svg" alt="Foguete atravessando um cinturão de asteroides" width="800" height="500" loading="lazy">
+                <figcaption><strong>Cinturão de asteroides</strong> Desvie das rochas e mantenha a velocidade.</figcaption>
+            </figure>
+            <figure>
+                <img src="/images/scene-galaxia.svg" alt="Galáxia espiral com duas naves" width="800" height="500" loading="lazy">
+                <figcaption><strong>Galáxia espiral</strong> Corra contra outros pilotos pelos braços da espiral.</figcaption>
+            </figure>
+            <figure>
+                <img src="/images/scene-pouso.svg" alt="Foguete pousado em um planeta sob uma nebulosa" width="800" height="500" loading="lazy">
+                <figcaption><strong>Pouso na nebulosa</strong> Chegue inteiro e finque sua bandeira.</figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+<section class="ranking" id="ranking">
+    <div class="wrap">
+        <h2>Ranking dos pilotos</h2>
+        <div class="ranking-layout">
+            <div class="ranking-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col-pos">Posição</th>
+                            <th scope="col">Piloto</th>
+                            <th scope="col" class="col-mode">Modo</th>
+                            <th scope="col" class="col-region">Galáxia</th>
+                            <th scope="col" class="col-score">Pontos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int rank = ((Model.Page - 1) * Model.PageSize) + 1;
+                        }
+                        @if (Model.Scores.Count() == 0)
+                        {
+                            <tr><td colspan="5" class="empty">Nenhum piloto neste filtro. Escolha outro modo ou galáxia.</td></tr>
+                        }
+                        @foreach (var score in Model.Scores)
+                        {
+                            var pos = rank++;
+                            <tr class="@(pos <= 3 ? "top top-" + pos : "")">
+                                <td class="col-pos">@(pos)º</td>
+                                <td>
+                                    <partial name="Profile" model="new ProfileViewModel { Profile = score.Profile, Rank = pos.ToString() }" />
+                                    <a class="player" href="" data-toggle="modal" data-target="#profile-modal-@pos">
+                                        <img class="avatar" src="/@score.Profile.AvatarUrl" alt="">
+                                        <span>@score.Profile.UserName</span>
+                                    </a>
+                                </td>
+                                <td class="col-mode">@score.Score.GameMode</td>
+                                <td class="col-region">@score.Score.GameRegion</td>
+                                <td class="col-score">@score.Score.HighScore.ToString("N0", new System.Globalization.CultureInfo("pt-BR"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
                 @{
-                    if (Model.Scores.Count() == 0)
-                    {
-                        <div class="row" style="margin-left: 5px; margin-top: 20px;">No scores match your selection.</div>
-                    }
-
-                    int rank = ((Model.Page - 1) * Model.PageSize) + 1;
-                    foreach (var score in Model.Scores)
-                    {
-                        <div class="row high-score align-items-center">
-                            <div class="col-sm-1 score-data">
-                                @(rank++).
-                            </div>
-                            <div class="col-sm-4 score-data">
-                                <div style="text-align: left; margin-left: 100px;">
-                                    <partial name="Profile" model="new ProfileViewModel { Profile = score.Profile, Rank = (rank - 1).ToString() }" />
-                                    <a href="" data-toggle="modal" data-target="#profile-modal-@((rank - 1).ToString())">
-                                        <img class="avatar" src="@score.Profile.AvatarUrl" alt="@score.Profile.UserName">
-                                        <div class="score-data username">
-                                            @score.Profile.UserName
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-sm-2 score-data">
-                                @score.Score.GameMode
-                            </div>
-                            <div class="col-sm-3 score-data">
-                                @score.Score.GameRegion
-                            </div>
-                            <div class="col-sm-2 score-data">
-                                @score.Score.HighScore.ToString("N0")
-                            </div>
-                        </div>
-                    }
+                    var totalPages = Model.TotalResults / Model.PageSize;
+                    if (Model.TotalResults % Model.PageSize != 0) { totalPages++; }
                 }
-                <nav aria-label="...">
-                    <ul class="pagination">
-                        @if (string.IsNullOrEmpty(Model.PrevLink))
+                @if (totalPages > 1)
+                {
+                    <nav class="pages" aria-label="Páginas do ranking">
+                        @if (!string.IsNullOrEmpty(Model.PrevLink))
                         {
-                            <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
+                            <a href="@Model.PrevLink">Anterior</a>
                         }
-                        else
+                        @for (int i = 1; i <= totalPages; i++)
                         {
-                            <li class=""><a href="@Model.PrevLink" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-                        }
-                        @{
-                            var totalPages = Model.TotalResults / Model.PageSize;
-                            if (Model.TotalResults % Model.PageSize != 0)
+                            if (i == Model.Page)
                             {
-                                totalPages++;
-                            }
-
-                            for (int i = 1; i <= totalPages; i++)
-                            {
-                                <li class="@(i == Model.Page ? "active" : null)">
-                                    <a href="@($"/?page={i}&pageSize={@Model.PageSize}&mode={@Model.SelectedMode}&region={@Model.SelectedRegion}")#leaderboard">
-                                        @i
-                                        <span class="sr-only">(current)</span>
-                                    </a>
-                                </li>
-                            }
-                        }
-                        @if (string.IsNullOrEmpty(Model.NextLink))
-                        {
-                            <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
-                        }
-                        else
-                        {
-                            <li class=""><a href="@Model.NextLink" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-                        }
-                    </ul>
-                </nav>
-            </div>
-
-            <div class="col-sm-3">
-                <div class="leader-nav hidden-xs">
-                    <div class="row nav-buttons">
-                        <h4>Mode</h4>
-                        <ul>
-                            @if (string.IsNullOrEmpty(Model.SelectedMode))
-                            {
-                                <li class="filter-active">All</li>
+                                <span class="current" aria-current="page">@i</span>
                             }
                             else
                             {
-                                <li class="filter-button">
-                                    <a class="" href="/?region=@Model.SelectedRegion#leaderboard">All</a>
-                                </li>
+                                <a href="@($"/?page={i}&pageSize={Model.PageSize}&mode={Model.SelectedMode}&region={Model.SelectedRegion}")#ranking">@i</a>
                             }
-                            @{
-                                foreach (var mode in Model.GameModes)
-                                {
-                                    @if (mode.Equals(Model.SelectedMode))
-                                    {
-                                        <li class="filter-active">@mode</li>
-                                    }
-                                    else
-                                    {
-                                        <li class="filter-button"><a href="/?mode=@mode&region=@Model.SelectedRegion#leaderboard">@mode</a></li>
-                                    }
-                                }
-                            }
-                        </ul>
-                    </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.NextLink))
+                        {
+                            <a href="@Model.NextLink">Próxima</a>
+                        }
+                    </nav>
+                }
+            </div>
 
-                    <div class="row nav-buttons">
-                        <h4>Galaxy</h4>
-                        <ul>
-                            @if (string.IsNullOrEmpty(Model.SelectedRegion))
+            <aside class="filters" aria-label="Filtros do ranking">
+                <h3>Modo de jogo</h3>
+                <ul>
+                    <li>
+                        @if (string.IsNullOrEmpty(Model.SelectedMode))
+                        {
+                            <span class="chip is-active">Todos</span>
+                        }
+                        else
+                        {
+                            <a class="chip" href="/?region=@Model.SelectedRegion#ranking">Todos</a>
+                        }
+                    </li>
+                    @foreach (var mode in Model.GameModes)
+                    {
+                        <li>
+                            @if (mode.Equals(Model.SelectedMode))
                             {
-                                <li class="filter-active">All</li>
+                                <span class="chip is-active">@mode</span>
                             }
                             else
                             {
-                                <li class="filter-button"><a href="/?mode=@Model.SelectedMode#leaderboard">All</a></li>
+                                <a class="chip" href="/?mode=@mode&region=@Model.SelectedRegion#ranking">@mode</a>
                             }
+                        </li>
+                    }
+                </ul>
 
-                            @{
-                                foreach (var region in Model.GameRegions)
-                                {
-                                    @if (region.Equals(Model.SelectedRegion))
-                                    {
-                                        <li class="filter-active">@region</li>
-                                    }
-                                    else
-                                    {
-                                        <li class="filter-button"><a href="/?mode=@Model.SelectedMode&region=@region#leaderboard">@region</a></li>
-                                    }
-                                }
+                <h3>Galáxia</h3>
+                <ul>
+                    <li>
+                        @if (string.IsNullOrEmpty(Model.SelectedRegion))
+                        {
+                            <span class="chip is-active">Todas</span>
+                        }
+                        else
+                        {
+                            <a class="chip" href="/?mode=@Model.SelectedMode#ranking">Todas</a>
+                        }
+                    </li>
+                    @foreach (var region in Model.GameRegions)
+                    {
+                        <li>
+                            @if (region.Equals(Model.SelectedRegion))
+                            {
+                                <span class="chip is-active">@region</span>
                             }
-                        </ul>
-                    </div>
-                </div>
-            </div>
+                            else
+                            {
+                                <a class="chip" href="/?mode=@Model.SelectedMode&region=@region#ranking">@region</a>
+                            }
+                        </li>
+                    }
+                </ul>
+            </aside>
         </div>
-        <!-- End Leaderboard -->
     </div>
 </section>
 
-<!-- About section -->
-<section class="about">
-    <h2>More about Space Game</h2>
-    <p>Space Game is an example website for learning purposes. Check out <a href="https://aka.ms/mslearndevops/">Microsoft Learn</a> to find out more.</p>
-</section>
-<section class="social">
-    <div class="container">
-        <div class="share">
-            <ul>
-                <li><a href="" data-toggle="modal" data-target=".social-media"><img src="/images/space-game-placeholder.svg" alt="" /></a></li>
-                <li><a href="" data-toggle="modal" data-target=".social-media"><img src="/images/space-game-placeholder.svg" alt="" /></a></li>
-                <li><a href="" data-toggle="modal" data-target=".social-media"><img src="/images/space-game-placeholder.svg" alt="" /></a></li>
-            </ul>
-        </div>
+<footer class="site-footer">
+    <div class="wrap">
+        <p class="footer-title">Seminário de Computação em Nuvem e Microsoft Azure</p>
+        <p>Fatec Rio Preto, disciplina de Sistemas Operacionais, Prof. Lucimar.</p>
+        <p>Guilherme, Henrique, João Pedro Amaro e José Pedro.</p>
+        <p class="footer-note">Space Game é um projeto de exemplo da Microsoft para aprender Azure DevOps. A TailSpin Toys é uma empresa fictícia. &copy; @DateTime.Now.Year</p>
     </div>
-    <p>&copy; @DateTime.Now.Year - TailSpin Toys</p>
-</section>
-
-
-<!-- Modals -->
-<div class="modal fade" id="test-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header no-border">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                modal
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Pic modals -->
-<div class="modal fade pic-01" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header no-border">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body text-center">
-                <img src="/images/space-game-placeholder.svg" width="100%" alt="">
-                <p>Gamescreen example</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Social -->
-<div class="modal fade social-media" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header no-border">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body text-center">
-                Social media example
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Dead end modal -->
-<div class="modal fade" id="pretend-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header no-border">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body text-center">
-                This link is for example purposes and goes nowhere. 😐
-            </div>
-        </div>
-    </div>
-</div>
+</footer>
