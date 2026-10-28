@@ -98,6 +98,47 @@ section {
   text-decoration: none;
 }
 
+.live-banner {
+  background: #FFB547;
+  color: #15123B;
+}
+
+.live-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.live-tag {
+  flex: 0 0 auto;
+  margin-right: 18px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #15123B;
+  color: #FFB547;
+  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.live-text {
+  flex: 1 1 320px;
+  margin: 4px 18px 4px 0;
+  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+.live-build {
+  flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 .hero {
   position: relative;
   overflow: hidden;

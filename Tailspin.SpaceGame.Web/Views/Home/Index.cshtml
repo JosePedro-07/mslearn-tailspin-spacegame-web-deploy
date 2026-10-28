@@ -15,6 +15,20 @@
     };
 }
 
+@if (deploy.HasMessage)
+{
+    <aside class="live-banner" aria-label="Recado publicado pelo pipeline">
+        <div class="live-inner">
+            <span class="live-tag">Recado ao vivo</span>
+            <p class="live-text">@deploy.Message</p>
+            @if (deploy.HasBuild)
+            {
+                <span class="live-build">Publicado pela compilação #@deploy.BuildNumber</span>
+            }
+        </div>
+    </aside>
+}
+
 <header class="hero">
     <div class="hero-inner">
         <div class="hero-text">

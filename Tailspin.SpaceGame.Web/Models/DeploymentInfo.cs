@@ -25,7 +25,11 @@ namespace TailSpin.SpaceGame.Web.Models
         // Versão do runtime .NET em execução.
         public string Runtime { get; private set; } = RuntimeInformation.FrameworkDescription;
 
+        // Recado ao vivo, lido de wwwroot/mensagem.txt (vazio = sem faixa).
+        public string Message { get; private set; } = "";
+
         public bool HasBuild => !string.IsNullOrEmpty(BuildNumber);
+        public bool HasMessage => !string.IsNullOrEmpty(Message);
 
         public static DeploymentInfo Load(string webRootPath)
         {
@@ -69,6 +73,28 @@ namespace TailSpin.SpaceGame.Web.Models
             catch (IOException)
             {
                 // Sem arquivo de compilação: a página mostra apenas o ambiente.
+            }
+
+            // Recado ao vivo: a primeira linha com texto de wwwroot/mensagem.txt.
+            try
+            {
+                var msgPath = Path.Combine(webRootPath ?? "", "mensagem.txt");
+                if (File.Exists(msgPath))
+                {
+                    foreach (var line in File.ReadAllLines(msgPath))
+                    {
+                        var text = line.Trim();
+                        if (text.Length > 0 && !text.StartsWith("#"))
+                        {
+                            info.Message = text.Length > 160 ? text.Substring(0, 160) : text;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                // Sem recado: a faixa não aparece.
             }
 
             return info;

@@ -122,6 +122,48 @@ section {
     }
 }
 
+// ---------- Recado ao vivo ----------
+.live-banner {
+    background: $amber;
+    color: $night;
+}
+
+.live-inner {
+    max-width: $wrap;
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.live-tag {
+    flex: 0 0 auto;
+    margin-right: 18px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: $night;
+    color: $amber;
+    font-family: $display;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.live-text {
+    flex: 1 1 320px;
+    margin: 4px 18px 4px 0;
+    font-family: $display;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.25;
+}
+
+.live-build {
+    flex: 0 0 auto;
+    font-size: 16px;
+    font-weight: 700;
+}
+
 // ---------- Hero ----------
 .hero {
     position: relative;
